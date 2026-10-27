@@ -18,18 +18,17 @@ class Student
                 VALUES (?, ?, ?, ?, ?)";
 
         $stmt = $this->conn->prepare($sql);
+        $stmt->bind_param("sssss", $name, $semester, $email, $password, $city);
 
-        return $stmt->execute([
-            $name, $semester, $email, $password, $city
-        ]);
+        return $stmt->execute();
     }
 
     // Read
     public function getAll()
     {
-        $stmt = $this->conn->query("SELECT * FROM students");
+        $result = $this->conn->query("SELECT * FROM students");
 
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        return $result->fetch_all(MYSQLI_ASSOC);
     }
 
     // Read one student
@@ -39,9 +38,10 @@ class Student
             "SELECT * FROM students WHERE id = ?"
         );
 
-        $stmt->execute([$id]);
+        $stmt->bind_param("i", $id);
+        $stmt->execute();
 
-        return $stmt->fetch(PDO::FETCH_ASSOC);
+        return $stmt->get_result()->fetch_assoc();
     }
 
     // Update
@@ -55,10 +55,9 @@ class Student
                 WHERE id = ?";
 
         $stmt = $this->conn->prepare($sql);
+        $stmt->bind_param("sssssi", $name, $semester, $email, $password, $city, $id);
 
-        return $stmt->execute([
-            $name, $semester, $email, $password, $city, $id
-        ]);
+        return $stmt->execute();
     }
 
     // Delete
@@ -68,7 +67,9 @@ class Student
             "DELETE FROM students WHERE id = ?"
         );
 
-        return $stmt->execute([$id]);
+        $stmt->bind_param("i", $id);
+
+        return $stmt->execute();
     }
 }
 ?>
