@@ -64,15 +64,21 @@ CREATE TABLE students (
     email VARCHAR(100) NOT NULL,
     password VARCHAR(255) NOT NULL,
     city VARCHAR(100) NOT NULL,
+    profile_picture VARCHAR(255) DEFAULT NULL,
     PRIMARY KEY (id),
     UNIQUE KEY email (email)
 );
 ```
 
 3. Click the **Go** button (usually bottom-right) to run it.
-4. You should see a success message. Click on **students** in the left sidebar (under `student_db`) to confirm the table was created with the columns: `id`, `name`, `semester`, `email`, `password`, `city`.
+4. You should see a success message. Click on **students** in the left sidebar (under `student_db`) to confirm the table was created with the columns: `id`, `name`, `semester`, `email`, `password`, `city`, and `profile_picture`.
 
 > You do not need to add any rows manually — the website's "Add Student" form will insert rows for you.
+
+> If you already created the `students` table using an earlier version of this guide, run this once in the phpMyAdmin **SQL** tab:
+> ```sql
+> ALTER TABLE students ADD profile_picture VARCHAR(255) DEFAULT NULL;
+> ```
 
 ---
 
@@ -107,9 +113,9 @@ const DB_PASSWORD = "";
 
 ## 8. Try it out
 
-1. Fill in the "Add Student" form (Name, Semester, Email, Password, Confirm Password, City) and click **Add Student**.
+1. Fill in the "Add Student" form (Name, Semester, Email, Password, Confirm Password, City, and optionally a JPEG, PNG, GIF, or WebP profile picture up to 5 MB) and click **Add Student**.
 2. The new student should now appear in the "Student List" table.
-3. Click **Edit** next to a student to update their details.
+3. Click **Edit** next to a student to update their details or replace their profile picture. Leaving the picture upload empty keeps the current picture.
 4. Click **Delete** next to a student to remove them (you'll be asked to confirm).
 
 ---

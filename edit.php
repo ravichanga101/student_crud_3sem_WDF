@@ -25,12 +25,37 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if ($password != $confirm) {
         $message = "Passwords do not match!";
     } else {
-        $student->update(
-            $id, $name, $semester, $email, $password, $city
-        );
+        $profilePicture = null;
+        try {
+            $profilePicture = $student->storeProfilePicture($_FILES["profile_picture"] ?? []);
+        } catch (RuntimeException $error) {
+            $message = $error->getMessage();
+        }
 
-        header("Location: index.php");
-        exit;
+        if ($message === "") {
+            if ($profilePicture === null) {
+                $profilePicture = $data["profile_picture"];
+            }
+
+            $updated = false;
+            try {
+                $updated = $student->update($id, $name, $semester, $email, $password, $city, $profilePicture);
+            } finally {
+                if (!$updated && $profilePicture !== $data["profile_picture"] && !empty($profilePicture)) {
+                    $student->removeProfilePicture($profilePicture);
+                }
+            }
+
+            if ($updated) {
+                if ($profilePicture !== $data["profile_picture"] && !empty($data["profile_picture"])) {
+                    $student->removeProfilePicture($data["profile_picture"]);
+                }
+
+                header("Location: index.php");
+                exit;
+            }
+            $message = "Could not update the student.";
+        }
     }
 }
 ?>
@@ -53,7 +78,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <p class="message"><?php echo $message; ?></p>
 <?php } ?>
 
-<form method="POST">
+<form method="POST" enctype="multipart/form-data">
     Name:
     <input type="text" name="name"
            value="<?php echo $data["name"]; ?>" required><br><br>
@@ -81,6 +106,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     City:
     <input type="text" name="city"
            value="<?php echo $data["city"]; ?>" required><br><br>
+
+    <?php if (!empty($data["profile_picture"])) { ?>
+        <p>Current profile picture:</p>
+        <img class="profile-picture" src="uploads/<?php echo htmlspecialchars($data["profile_picture"], ENT_QUOTES, "UTF-8"); ?>" alt="Current profile picture"><br><br>
+    <?php } ?>
+
+    Profile Picture (optional):
+    <input type="file" name="profile_picture" accept="image/jpeg,image/png,image/gif,image/webp"><br><br>
 
     <button type="submit">Update Student</button>
 </form>

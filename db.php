@@ -1,6 +1,6 @@
 <?php
 const DB_SERVER = "localhost";
-const DB_NAME = "student_db";
+const DB_NAME = "student_db";  // create database first using phpmyadmin
 const DB_USERNAME = "root";
 const DB_PASSWORD = "";
 
